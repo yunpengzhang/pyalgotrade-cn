@@ -85,6 +85,21 @@ def downloadDataFromFutu(instrument, market, ktype, kline_num, quote_ctx):
     print(kline_table)
     print("\n\n")
     return kline_table
+
+
+def downloadDataFromFutuWithDate(instrument, market, ktype, from_date, to_date, quote_ctx):
+    code = market + '.' + instrument
+    
+    
+    
+    quote_ctx.subscribe(code, ktype)
+    ret_code, ret_data = quote_ctx.get_history_kline(code, from_date, to_date, ktype, autype='qfq')
+    
+    kline_table = ret_data
+    print("%s KLINE %s" % (code, ktype))
+    print(kline_table)
+    print("\n\n")
+    return kline_table
     
 def testStrategy():
     from pyalgotrade import bar
@@ -94,8 +109,8 @@ def testStrategy():
     instrument = '00700'
     #instrument = '03988'
     market = 'HK'
-    fromDate = '20160101'
-    toDate ='20170601'
+    fromDate = '2016-01-01'
+    toDate ='2016-09-01'
     #frequency = bar.Frequency.MINUTE
     frequency = bar.Frequency.DAY
     paras = [5, 20]
@@ -119,7 +134,10 @@ def testStrategy():
     #quote_ctx = futu_open.OpenQuoteContext(host='127.0.0.1', async_port=11111)
     #云服务器ip，方便测试
     quote_ctx = futu_open.OpenQuoteContext(host='119.29.141.202', async_port=11111)
-    kline_table=downloadDataFromFutu(instrument, market, ktype, 500, quote_ctx)
+    
+    #获取从现在起之前500根k线
+    #kline_table=downloadDataFromFutu(instrument, market, ktype, 500, quote_ctx)
+    kline_table=downloadDataFromFutuWithDate(instrument, market, ktype, fromDate, toDate, quote_ctx)
     kline_table.to_csv(filepath,header=['id','datetime','open','close','high','low','volume','amount'])
     
     
@@ -132,7 +150,7 @@ def testStrategy():
     elif frequency == bar.Frequency.DAY:
         barfeed.setDateTimeFormat('%Y-%m-%d %H:%M:%S')
         
-    barfeed.loadBars(instrument, market, fromDate, toDate, filepath)
+    barfeed.loadBars(instrument, market, fromDate.replace('-',''), toDate.replace('-',''), filepath)
     
     pyalgotrade_id = instrument + '.' + market
     
