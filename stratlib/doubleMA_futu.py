@@ -137,6 +137,8 @@ def testStrategy():
     
     #获取从现在起之前500根k线
     #kline_table=downloadDataFromFutu(instrument, market, ktype, 500, quote_ctx)
+    
+    #根据两个时间区段获取行情数据，时间格式2016-01-01，在loadBars里的时间格式是20160101
     kline_table=downloadDataFromFutuWithDate(instrument, market, ktype, fromDate, toDate, quote_ctx)
     kline_table.to_csv(filepath,header=['id','datetime','open','close','high','low','volume','amount'])
     
